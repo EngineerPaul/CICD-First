@@ -1,0 +1,31 @@
+name: CD # Имя workflow (деплой)
+
+on: # События, при которых выполняется CD
+  workflow_run: # Запуск после другого workflow
+    workflows: ["CI"] # Ждём завершения workflow с именем "CI" (см. ci.yml)
+    types: [completed] # Срабатываем, когда CI завершился (успех/ошибка)
+    branches: ["main"] # Только если CI был запущен для ветки main
+
+concurrency: # Не даём нескольким деплоям идти параллельно
+  group: cd-main # Все деплои в main — в одной группе
+  cancel-in-progress: true # Новый деплой отменит предыдущий, если тот ещё выполняется
+
+jobs: # Набор jobs в этом workflow
+  deploy: # Деплой на сервер
+    runs-on: ubuntu-latest # Runner для деплоя
+    if: ${{ github.event.workflow_run.conclusion == 'success' }} # Деплой только если CI успешен
+    steps: # Шаги деплоя
+      - name: Deploy via SSH (git pull + docker compose) # Понятное имя шага в логах
+        uses: appleboy/ssh-action@v1.2.0 # Action для выполнения команд по SSH
+        with: # Параметры подключения
+          host: ${{ secrets.SSH_HOST }} # IP/домен сервера (GitHub Secrets)
+          username: ${{ secrets.SSH_USER }} # Пользователь на сервере (GitHub Secrets)
+          key: ${{ secrets.SSH_KEY }} # Приватный SSH ключ (GitHub Secrets)
+          port: ${{ secrets.SSH_PORT || 22 }} # Порт SSH (если секрет не задан — 22)
+          script_stop: true # Остановить шаг при первой ошибке в скрипте
+          script: | # Команды, которые выполнятся на сервере
+            set -e # Прерываем выполнение при ошибке
+            cd /var/www/cicd/CICD-First # Папка проекта на сервере
+            git pull # Забрать свежий код из GitHub
+            docker compose up -d --build # Собрать/обновить контейнеры в фоне (Compose v2)
+
