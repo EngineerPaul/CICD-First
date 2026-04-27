@@ -1,0 +1,3 @@
+IP: 155.212.138.195
+user: root
+pass: *vroe6q4T8*V
