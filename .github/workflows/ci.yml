@@ -11,10 +11,10 @@ jobs: # Набор jobs (условные “этапы” пайплайна)
   tests: # Job с тестами
     runs-on: ubuntu-latest # Runner/VM, где выполняются шаги
     steps: # Шаги внутри job выполняются последовательно
-      - uses: actions/checkout@v4 # Клонирует репозиторий в workspace runner'а
+      - uses: actions/checkout@v6 # Клонирует репозиторий в workspace runner'а
 
       - name: Set up Python # Имя шага (для логов в Actions)
-        uses: actions/setup-python@v5 # Устанавливает/выбирает нужную версию Python на runner'е
+        uses: actions/setup-python@v6 # Устанавливает/выбирает нужную версию Python на runner'е
         with: # Параметры action'а
           python-version: "3.12" # Версия Python для выполнения тестов
 

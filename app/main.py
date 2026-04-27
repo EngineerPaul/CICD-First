@@ -5,5 +5,5 @@ app = FastAPI()
 
 @app.get("/")
 def hello() -> dict[str, str]:
-    return {"message": "Hello, world!"}
+    return {"message": "Hello world!"}
 
