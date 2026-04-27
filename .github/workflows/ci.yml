@@ -1,5 +1,8 @@
 name: CI # Имя workflow, отображается в GitHub Actions
 
+env: # Глобальные переменные окружения для workflow
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true" # Убирает предупреждение про Node.js 20 (и готовит к смене дефолта)
+
 on: # События, при которых workflow запускается
   push: # Запуск на push (во все ветки, т.к. фильтр branches не задан)
   pull_request: # Запуск на PR (проверка изменений перед мерджем)
@@ -21,5 +24,5 @@ jobs: # Набор jobs (условные “этапы” пайплайна)
           pip install -r requirements.txt # Ставим зависимости из requirements.txt
 
       - name: Run tests # Запуск тестов
-        run: pytest -q # pytest вернёт ненулевой код — job и workflow упадут
+        run: python -m pytest -q # Запуск тестов pytest
 
